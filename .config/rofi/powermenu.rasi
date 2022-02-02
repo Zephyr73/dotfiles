@@ -1,0 +1,63 @@
+configuration {
+    modi: "window,run,drun";
+    show-icons: true;
+    font: "DejaVuSansMono Nerd Font Mono 11";
+}
+
+@import "~/.config/rofi/theme.rasi"
+
+* {
+  bg: #1C1C25;
+  fg: #B3BBE5;
+  fg-alt: #66697b;
+
+  background-color: @bg;
+
+  border: 0;
+  margin: 0;
+  padding: 0;
+  spacing: 0;
+}
+
+
+
+element-icon {
+	size: 22;
+    margin: 2px;
+}
+
+window {
+	width: 15%;
+	border: 2px;
+	border-color: @bg;
+	border-radius: 5;
+}
+
+mainbox {
+    border:  0;
+    padding: 0;
+    children: [listview];
+    background-color: @color0;
+}
+
+listview {
+	padding: 12 12;
+	background-color: @bg;
+	columns: 1;
+	lines: 4;
+	scrollbar: false;
+}
+
+prompt {
+  background-color: @bg-alt;
+  enabled: false;
+  padding: 12 0 0 12;
+  text-color: @fg;
+}
+
+entry {
+    enabled: false;
+	background-color: @bg;
+	padding: 12;
+	text-color: @fg;
+}
