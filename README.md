@@ -9,6 +9,6 @@ These are my dotfiles for my i3 setup!
 - Bar: [Polybar](https://github.com/polybar/polybar)
 
 ## Screenshots
-![Desktop Setup](/screenshots/Home.png?raw=true)
-![Rofi](/screenshots/Rofi.png?raw=true)
-![Rofi powermenu](/screenshots/Rofi-powermenu.png?raw=true)
+![Desktop Setup](/screenshots/home.jpg?raw=true)
+![Rofi](/screenshots/rofi.jpg?raw=true)
+![Rofi powermenu](/screenshots/rofi-powermenu.jpg?raw=true)
