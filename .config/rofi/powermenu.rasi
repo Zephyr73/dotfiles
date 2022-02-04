@@ -27,7 +27,7 @@ element-icon {
 }
 
 window {
-	width: 15%;
+	width: 13%;
 	border: 2px;
 	border-color: @bg;
 	border-radius: 5;
