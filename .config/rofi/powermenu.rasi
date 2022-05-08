@@ -4,9 +4,9 @@ configuration {
     font: "DejaVuSansMono Nerd Font Mono 11";
 }
 
-@import "~/.config/rofi/theme.rasi"
+@import "~/.config/rofi/Themes/lavender.rasi"
 
-* {
+/* {
   bg: #1C1C25;
   fg: #B3BBE5;
   fg-alt: #66697b;
@@ -18,7 +18,7 @@ configuration {
   padding: 0;
   spacing: 0;
 }
-
+*/
 
 
 element-icon {

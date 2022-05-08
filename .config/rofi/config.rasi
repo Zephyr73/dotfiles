@@ -10,7 +10,7 @@ configuration {
 
 }
 
-@theme "~/.config/rofi/theme.rasi"
+@theme "~/.config/rofi/Themes/lavender.rasi"
 
 window {
 	width: 45%;
