@@ -1,0 +1,23 @@
+# Apps added on top of stock Omarchy.
+# Applied by: omarchy/scripts/sync-apps  (runs `omarchy pkg add` for each)
+# One package per line. Lines starting with # are ignored.
+
+# Browser (replaces stock chromium)
+firefox
+
+# Discord client (lightweight fork, replaces discord)
+vesktop-bin        # AUR
+visual-studio-code-bin   # AUR
+
+# Password manager
+bitwarden
+bitwarden-cli
+
+# Phone integration
+kdeconnect
+
+# VPN
+tailscale
+
+# Fingerprint login (pairs with omarchy setup security fingerprint)
+fprintd

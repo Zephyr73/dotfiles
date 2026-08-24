@@ -1,0 +1,24 @@
+# Whitelist approach: ignore everything, then allow only Omarchy visual configs.
+/*
+
+# Repo meta
+!/.gitignore
+!/README.md
+
+# Omarchy core (WM rules, shell/bar, themes, hooks, scripts, menu)
+!/hypr/
+!/omarchy/
+!/backgrounds/
+
+# Terminals
+!/alacritty/
+!/foot/
+!/kitty/
+!/ghostty/
+
+# Machine-specific (regenerate per device with: omarchy refresh config hypr/monitors.lua)
+/hypr/monitors.lua
+
+# Junk / backups
+*.bak.*
+*.bak-*

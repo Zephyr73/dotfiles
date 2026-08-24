@@ -1,0 +1,41 @@
+# Stock Omarchy packages removed during debloat.
+# Applied by: omarchy/scripts/sync-apps  (runs `omarchy pkg drop` for each)
+# One package per line. Lines starting with # are ignored.
+
+# Media / creative suite
+cliamp
+kdenlive          # also drops dotnet-runtime dependency
+dotnet-runtime
+obs-studio
+mpv
+mpv-mpris
+pinta
+
+# Office
+libreoffice-fresh
+xournalpp
+
+# Browser (using firefox instead)
+chromium
+
+# Printing stack
+cups
+cups-browsed
+cups-filters
+cups-pdf
+system-config-printer
+
+# Input method / locale extras
+fcitx5
+fcitx5-gtk
+fcitx5-qt
+noto-fonts-cjk
+
+# Network / misc
+localsend
+qemu-user-static-binfmt
+yt-dlp
+omawrite
+
+# Disk tools (using dua-cli launcher instead)
+gnome-disk-utility

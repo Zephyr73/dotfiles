@@ -1,0 +1,169 @@
+#!/bin/bash
+
+# omarchy:summary=Regenerate the Vesktop (Vencord) theme from the active Omarchy palette
+# omarchy:args=[theme-slug]
+# omarchy:hidden=true
+
+# Uses refact0r/system24 as the base theme (a tui-style Discord theme that fits
+# the Omarchy design language). system24 layers on top of refact0r/midnight's
+# maintained engine, which maps palette variables onto all current Discord
+# internals. Both builds are inlined so nothing is fetched at app launch.
+# The slug argument sent by the theme-set hook is ignored: the palette always
+# comes from the applied theme state.
+#
+# Upstream sources are cached and only refreshed when older than
+# VESKTOP_THEME_CACHE_MAX_AGE days (default 7), so a theme switch never waits
+# on the network unless caches are cold. All output locations can be overridden
+# via environment variables for testing.
+
+set -euo pipefail
+
+COLORS_FILE="${OMARCHY_COLORS_FILE:-$HOME/.local/state/omarchy/current/theme/colors.toml}"
+THEMES_DIR="${VESKTOP_THEMES_DIR:-$HOME/.config/vesktop/themes}"
+VENCORD_SETTINGS="${VENCORD_SETTINGS:-$HOME/.config/vesktop/settings/settings.json}"
+THEME_OUT="$THEMES_DIR/omarchy.theme.css"
+TEMPLATE_URL="${SYSTEM24_TEMPLATE_URL:-https://raw.githubusercontent.com/refact0r/system24/main/theme/system24.theme.css}"
+TEMPLATE_CACHE="${SYSTEM24_TEMPLATE_CACHE:-$HOME/.cache/omarchy/system24.template.css}"
+S24_BUILD_URL="${SYSTEM24_BUILD_URL:-https://refact0r.github.io/system24/build/system24.css}"
+S24_BUILD_CACHE="${SYSTEM24_BUILD_CACHE:-$HOME/.cache/omarchy/system24.build.css}"
+MID_BUILD_URL="${MIDNIGHT_BUILD_URL:-https://refact0r.github.io/midnight-discord/build/midnight.css}"
+MID_BUILD_CACHE="${MIDNIGHT_BUILD_CACHE:-$HOME/.cache/omarchy/midnight.build.css}"
+CACHE_MAX_AGE_DAYS="${VESKTOP_THEME_CACHE_MAX_AGE:-7}"
+
+command -v omarchy-theme-color >/dev/null || exit 0
+[[ -f $COLORS_FILE ]] || { echo "No colors.toml at $COLORS_FILE; skipping Vesktop theming" >&2; exit 0; }
+
+declare -A C=()
+while IFS=$'\t' read -r key value; do
+  [[ -n ${key:-} && -n ${value:-} ]] && C[$key]=$value
+done < <(omarchy-theme-color --file "$COLORS_FILE" --all)
+
+c() { echo "${C[$1]:-${2-}}"; }
+cm() { echo "color-mix(in srgb, $1 $2%, ${3:-#000000})"; }
+
+BG=$(c background "#111111")
+BG2=$(c dark_background "$BG")
+RAISE=$(c lighter_background "$(cm "$BG" 85 "#ffffff")")
+SEL=$(c selection "$(cm "$BG" 78)")
+FG=$(c foreground "#dcddde")
+FGB=$(c bright_foreground "$FG")
+MUT=$(c muted "#72767d")
+ACC=$(c accent "#5865f2")
+RED=$(c bright_red "$(c red "#ed4245")")
+GRN=$(c bright_green "$(c green "#3ba55d")")
+YLW=$(c bright_yellow "$(c yellow "#faa81a")")
+MAG=$(c bright_magenta "$(c magenta "#eb459e")")
+
+fetch_cache() {
+  local url=$1 cache=$2 timeout=${3:-15}
+  if [[ -f $cache ]]; then
+    local age=$(( $(date +%s) - $(stat -c %Y "$cache") ))
+    (( age < CACHE_MAX_AGE_DAYS * 86400 )) && return 0
+  fi
+  local tmp
+  if tmp=$(curl -fsSL --max-time "$timeout" "$url" 2>/dev/null); then
+    printf '%s' "$tmp" >"${cache}.tmp" && mv "${cache}.tmp" "$cache"
+  fi
+}
+
+mkdir -p "$(dirname "$TEMPLATE_CACHE")"
+fetch_cache "$TEMPLATE_URL" "$TEMPLATE_CACHE"
+fetch_cache "$S24_BUILD_URL" "$S24_BUILD_CACHE" 20
+fetch_cache "$MID_BUILD_URL" "$MID_BUILD_CACHE" 20
+[[ -f $TEMPLATE_CACHE && -f $S24_BUILD_CACHE && -f $MID_BUILD_CACHE ]] || { echo "system24 sources unavailable; keeping current Vesktop theme" >&2; exit 0; }
+
+HEAD=$(awk '/\/\* color options \*\//{exit} {print}' "$TEMPLATE_CACHE" |
+  grep -v "^@import url('https://refact0r.github.io/system24/build/system24.css');$" |
+  grep -v "^/\* import theme modules \*/$")
+ENGINE=$(grep -vE "^@import url\('https://(refact0r\.github\.io/midnight-discord/build/midnight\.css|fonts\.googleapis\.com/css2\?family=Figtree[^)]*)'\);?$" "$MID_BUILD_CACHE")
+
+ENGINE="$ENGINE
+
+$(grep -v "^@import url('https://refact0r.github.io/midnight-discord/build/midnight.css');$" "$S24_BUILD_CACHE")"
+
+gen_ramp() {
+  local name=$1 color=$2 i pct
+  local -a pcts=(100 88 76 64 52)
+  for i in 1 2 3 4 5; do
+    pct=${pcts[$((i - 1))]}
+    if [[ $pct == 100 ]]; then
+      echo "    --${name}-${i}: ${color};"
+    else
+      echo "    --${name}-${i}: $(cm "$color" "$pct");"
+    fi
+  done
+}
+
+ROOT=":root {
+    --colors: on;
+
+    --text-0: var(--bg-4);
+    --text-1: ${FGB};
+    --text-2: ${FG};
+    --text-3: $(cm "$FG" 86 "$BG");
+    --text-4: ${MUT};
+    --text-5: $(cm "$MUT" 55 "$BG");
+
+    --bg-1: $(cm "$SEL" 75 "$BG");
+    --bg-2: ${SEL};
+    --bg-3: ${BG2};
+    --bg-4: ${BG};
+    --hover: $(cm "$FG" 6 transparent);
+    --active: $(cm "$SEL" 85 transparent);
+    --active-2: $(cm "$SEL" 65 transparent);
+    --message-hover: rgba(0, 0, 0, 0.08);
+
+    --accent-1: ${ACC};
+    --accent-2: ${ACC};
+    --accent-3: $(cm "$ACC" 84);
+    --accent-4: $(cm "$ACC" 70);
+    --accent-5: $(cm "$ACC" 58);
+    --accent-new: var(--accent-2);
+    --mention: linear-gradient(to right, color-mix(in hsl, var(--accent-2), transparent 90%) 40%, transparent);
+    --mention-hover: linear-gradient(to right, color-mix(in hsl, var(--accent-2), transparent 95%) 40%, transparent);
+    --reply: linear-gradient(to right, color-mix(in hsl, var(--text-3), transparent 90%) 40%, transparent);
+    --reply-hover: linear-gradient(to right, color-mix(in hsl, var(--text-3), transparent 95%) 40%, transparent);
+
+    --online: var(--green-2);
+    --dnd: var(--red-2);
+    --idle: var(--yellow-2);
+    --streaming: var(--purple-2);
+    --offline: var(--text-4);
+
+    --border-light: var(--hover);
+    --border: var(--active);
+    --border-hover: var(--active);
+    --button-border: $(cm "$FG" 10 transparent);
+
+$(gen_ramp red "$RED")
+
+$(gen_ramp green "$GRN")
+
+$(gen_ramp blue "$ACC")
+
+$(gen_ramp yellow "$YLW")
+
+$(gen_ramp purple "$MAG")
+}"
+
+CSS="${ENGINE}
+
+${HEAD}
+/* color options (generated by omarchy-theme-sync from the active Omarchy theme) */
+${ROOT}
+"
+
+mkdir -p "$THEMES_DIR"
+if [[ ! -f $THEME_OUT ]] || [[ $(<"$THEME_OUT") != "$CSS" ]]; then
+  tmp=$(mktemp)
+  printf '%s\n' "$CSS" >"$tmp"
+  mv "$tmp" "$THEME_OUT"
+fi
+
+mkdir -p "$(dirname "$VENCORD_SETTINGS")"
+if [[ -f $VENCORD_SETTINGS ]]; then
+  jq '.enabledThemes = ((.enabledThemes // []) | if index("omarchy.theme.css") then . else . + ["omarchy.theme.css"] end)' \
+    "$VENCORD_SETTINGS" >"${VENCORD_SETTINGS}.tmp" && mv "${VENCORD_SETTINGS}.tmp" "$VENCORD_SETTINGS"
+else
+  printf '{\n  "enabledThemes": ["omarchy.theme.css"]\n}\n' >"$VENCORD_SETTINGS"
+fi

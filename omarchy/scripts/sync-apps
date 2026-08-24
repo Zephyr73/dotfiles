@@ -1,0 +1,54 @@
+#!/bin/bash
+# Apply the package manifest in omarchy/packages/ to this machine.
+# Usage: sync-apps [--dry-run]
+
+set -euo pipefail
+
+PKG_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../packages" && pwd)"
+DRY_RUN=0
+[[ "${1:-}" == "--dry-run" ]] && DRY_RUN=1
+
+read_list() {
+  sed 's/#.*//' "$1" | awk '{$1=$1};1' | grep -v '^$' || true
+}
+
+ADD=$(read_list "$PKG_DIR/add.txt")
+REMOVE=$(read_list "$PKG_DIR/remove.txt")
+
+echo "Manifest: add $(wc -w <<<"$ADD") packages, drop $(wc -w <<<"$REMOVE") packages"
+
+if (( DRY_RUN )); then
+  echo "--- would install:"; echo "$ADD"
+  echo "--- would remove:";  echo "$REMOVE"
+  exit 0
+fi
+
+if [[ -n "$REMOVE" ]]; then
+  echo "Removing debloated stock packages..."
+  omarchy pkg drop $REMOVE
+fi
+
+if [[ -n "$ADD" ]]; then
+  # Split into official-repo vs AUR packages and route each accordingly
+  REPO_PKGS=()
+  AUR_PKGS=()
+  for pkg in $ADD; do
+    if pacman -Si "$pkg" &>/dev/null; then
+      REPO_PKGS+=("$pkg")
+    else
+      AUR_PKGS+=("$pkg")
+    fi
+  done
+
+  if ((${#REPO_PKGS[@]})); then
+    echo "Installing from repos: ${REPO_PKGS[*]}"
+    omarchy pkg add "${REPO_PKGS[@]}"
+  fi
+
+  if ((${#AUR_PKGS[@]})); then
+    echo "Installing from AUR: ${AUR_PKGS[*]}"
+    omarchy pkg aur add "${AUR_PKGS[@]}"
+  fi
+fi
+
+echo "Done."
