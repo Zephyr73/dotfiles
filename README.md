@@ -2,6 +2,8 @@
 
 Personal config sync for [Omarchy](https://omarchy.org) (Arch + Hyprland).
 
+![Omarchy setup](screenshots/omarchy-setup.png)
+
 ## Branches
 
 | Branch | Contents |

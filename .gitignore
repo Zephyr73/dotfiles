@@ -4,6 +4,7 @@
 # Repo meta
 !/.gitignore
 !/README.md
+!/screenshots/
 
 # Omarchy core (WM rules, shell/bar, themes, hooks, scripts, menu)
 !/hypr/
