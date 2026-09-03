@@ -30,9 +30,8 @@
 # the repo limited to ONLY the user's genuine changes on top of Omarchy.
 # ---------------------------------------------------------------------------
 
-# Hypr — stock files (only input.lua & looknfeel.lua are genuinely custom)
-/hypr/bindings.lua
-/hypr/hyprland.lua
+# Hypr — stock files (input.lua, looknfeel.lua, bindings.lua & hyprland.lua
+# are genuinely custom)
 /hypr/autostart.lua
 /hypr/hyprsunset.conf
 /hypr/.luarc.json

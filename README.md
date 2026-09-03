@@ -40,6 +40,8 @@ reproduces this device's setup.
 
 - `hypr/input.lua`, `hypr/looknfeel.lua` — window-manager tweaks (gaps, blur,
   touchpad, gestures)
+- `hypr/bindings.lua`, `hypr/hyprland.lua` — keybindings (preinstalled
+  app/webapp bindings disabled; tmux/herdr/docker kept)
 - `omarchy/shell.json` — bar layout (clock, weather, network, power)
 - `omarchy/firefox/` — square + frosted-glass static theme
 - `omarchy/packages/` — app add/remove manifest
@@ -97,10 +99,18 @@ built-in Dark theme repaints the chrome over the CSS and breaks the glass colors
 
 ### Apps (packages)
 
+Uninstall the stock Omarchy apps removed on this device (per
+`omarchy/packages/remove.txt`) and install the added ones, in one go:
+
 ```bash
 ~/.config/omarchy/scripts/sync-apps                # add/remove per manifest
 ~/.config/omarchy/scripts/sync-apps --dry-run      # preview only
 ```
+
+`sync-apps` calls `omarchy pkg drop` for every package in `remove.txt` and
+`omarchy pkg add` for `add.txt`, so re-running it on a fresh install reproduces
+this device's exact package set (idempotent — already-removed packages are
+skipped).
 
 AUR packages (`vesktop-bin`, `visual-studio-code-bin`) are routed through
 `omarchy pkg aur add` automatically.
