@@ -1,0 +1,7 @@
+/* Square corners on internal pages only (about:*) — websites untouched */
+
+@-moz-document url-prefix("about:") {
+  * {
+    border-radius: 0 !important;
+  }
+}

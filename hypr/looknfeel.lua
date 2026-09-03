@@ -1,16 +1,5 @@
 -- Change the default Omarchy look'n'feel.
 
--- Square corners (overrides the solitude theme's rounding = 6).
-hl.config({
-  decoration = {
-    rounding = 0,
-    rounding_power = 2,
-  },
-})
-
--- No rounding on popped windows either.
-o.window({ tag = "pop" }, { rounding = 0 })
-
 -- https://wiki.hypr.land/Configuring/Basics/Variables/#general
 -- hl.config({
 --   general = {
@@ -59,3 +48,31 @@ o.window({ tag = "pop" }, { rounding = 0 })
 --     column_width = 0.97,
 --   },
 -- })
+
+-- Tighter window gaps than Omarchy's defaults (5 / 10).
+hl.config({
+  general = {
+    gaps_in = 3,
+    gaps_out = 5,
+  },
+})
+
+
+-- Frosted glass: enable compositor blur (Firefox opts in via CSS translucency)
+hl.config({
+  decoration = {
+    blur = {
+      enabled = true,
+      size = 12,
+      passes = 3,
+      vibrancy = 0.23,
+      brightness = 1.0,
+      contrast = 0.9,
+      noise = 0.02,
+      popups = true,
+    },
+  },
+})
+
+-- Defeat Firefox's whole-window opaque region so CSS glass renders (see Hyprland #3049)
+o.window("firefox", { opacity = "0.9 override 0.9 override" })

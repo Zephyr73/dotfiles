@@ -42,6 +42,41 @@ Apply on this machine after pulling changes:
 
 AUR packages (`vesktop-bin`, `visual-studio-code-bin`) are detected and routed through `omarchy pkg aur add` automatically.
 
+## Firefox theming (auto-sync)
+
+The hand-built "square + frosted-glass" Firefox theme lives as static templates in
+`omarchy/firefox/`:
+
+- `base.userChrome.css` — the glass UI, with the accent color exposed as
+  `--uc-accent-rgb` so it follows the active Omarchy palette
+- `base.userContent.css` — square corners on `about:*` pages
+
+On every Omarchy theme change (or when run manually), the `theme-set` hook
+(`omarchy/hooks/theme-set.d/firefox-theme-sync`) stamps the active palette accent
+into each active Firefox profile's `chrome/` directory, so switching themes
+recolors the accent while preserving the glass layout:
+
+```bash
+~/.config/omarchy/scripts/firefox-theme-sync   # regenerate now
+```
+
+Requires Firefox's `toolkit.legacyUserProfileCustomizations.stylesheets=true`
+(user.js) plus `widget.wayland.opaque-region.enabled=false` for the glass to render.
+
+## Boot / login screen (plymouth + SDDM)
+
+The customized boot splash and login theme live in `/usr/share` (not `~/.config`),
+so a stock `omarchy update` would overwrite them. They're backed up here:
+
+- `omarchy/plymouth/` — boot splash theme
+- `omarchy/sddm/` — login (post-logout) theme
+
+Restore them (e.g. after an update reverts them, or on a fresh install):
+
+```bash
+~/.config/omarchy/scripts/sync-plymouth     # copies both into /usr/share + rebuilds initramfs
+```
+
 ## Restore on a fresh Omarchy install
 
 A fresh install already populates `~/.config` with defaults, so graft the repo

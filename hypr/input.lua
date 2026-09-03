@@ -44,6 +44,31 @@
 --   },
 -- })
 
+-- Restore normal Caps Lock (Omarchy default remaps it to a Compose key).
+hl.config({
+  input = {
+    kb_options = "",
+  },
+})
+
+-- Touchpad runs in legacy PS/2 mode on this machine (RMI4/SMBus intertouch
+-- unsupported by firmware), where libinput's generic acceleration curve
+-- amplifies coarse low-rate deltas and feels jumpy. A flat profile gives
+-- predictable 1:1 movement.
+-- scroll_factor raised above Omarchy's default 0.4: this pad only holds its
+-- two-finger state for ~50ms bursts during motion, so scroll gestures
+-- deliver little data; compensate by scaling what does arrive.
+hl.device({
+  name = "synps/2-synaptics-touchpad",
+  accel_profile = "flat",
+  sensitivity = 0,
+  scroll_factor = 1.0,
+})
+
+-- Enable 3-finger horizontal swipes for workspace switching (disabled by
+-- default in Omarchy; without this the gesture has nothing to trigger).
+hl.gesture({ fingers = 3, direction = "horizontal", action = "workspace" })
+
 -- App-specific touchpad scroll speeds.
 -- o.window("(Alacritty|kitty|foot)", { scroll_touchpad = 1.5 })
 -- o.window("com.mitchellh.ghostty", { scroll_touchpad = 0.2 })

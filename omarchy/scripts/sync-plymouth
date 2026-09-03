@@ -1,0 +1,39 @@
+#!/bin/bash
+# Restore the customized Omarchy plymouth boot theme + SDDM login theme.
+# Copies the repo copies into /usr/share and rebuilds the initramfs.
+# Safe to run idempotently (overwrites with the backed-up versions).
+# Usage: sync-plymouth
+
+set -euo pipefail
+
+SRC_PLYMOUTH="$HOME/.config/omarchy/plymouth"
+SRC_SDDM="$HOME/.config/omarchy/sddm"
+
+# NOTE: this script needs root to write into /usr/share. It invokes sudo
+# itself, so run it from a normal shell (a password prompt will appear).
+
+# Plymouth boot theme
+if [[ ! -d "$SRC_PLYMOUTH" ]]; then
+  echo "Error: $SRC_PLYMOUTH not found" >&2
+  exit 1
+fi
+echo "Installing plymouth theme..."
+sudo cp -a "$SRC_PLYMOUTH/." /usr/share/plymouth/themes/omarchy/
+sudo plymouth-set-default-theme omarchy
+
+# SDDM login theme (post-logout screen)
+if [[ -d "$SRC_SDDM" ]]; then
+  echo "Installing SDDM theme..."
+  sudo cp -a "$SRC_SDDM/." /usr/share/sddm/themes/omarchy/
+else
+  echo "Skipping SDDM theme ($SRC_SDDM not found)"
+fi
+
+echo "Rebuilding initramfs..."
+if command -v omarchy >/dev/null && omarchy-cmd-present limine-mkinitcpio 2>/dev/null; then
+  sudo limine-mkinitcpio
+else
+  sudo mkinitcpio -P
+fi
+
+echo "Plymouth/SDDM theme restored."
