@@ -52,12 +52,9 @@
   --glass-blur: 24px;
   --glass-saturation: 1.8;
   --page-frost: 4px;
-  --glass-fill: rgb(22 23 33 / 0.48);
-  --glass-fill-strong: rgb(14 14 20 / 0.6);
-  --glass-border: rgb(var(--uc-accent-rgb) / 0.18);
-
-  /* accent (auto-synced from Omarchy palette by firefox-theme-sync) */
-  --uc-accent-rgb: 169 177 214;
+  --glass-fill: rgb(5 5 8 / 0.4);
+  --glass-fill-strong: rgb(3 3 5 / 0.6);
+  --glass-border: rgb(169 177 214 / 0.18);
 
   --toolbar-bgcolor: transparent !important;
   --arrowpanel-background: var(--glass-fill-strong) !important;
@@ -124,11 +121,11 @@ notification-message,
 }
 
 .tab-background[selected] {
-  background: rgb(var(--uc-accent-rgb) / 0.18) !important;
+  background: rgb(169 177 214 / 0.18) !important;
 }
 
 .tab-background:not([selected]):hover {
-  background: rgb(var(--uc-accent-rgb) / 0.1) !important;
+  background: rgb(169 177 214 / 0.1) !important;
 }
 
 .panel-arrowcontent {
@@ -164,11 +161,11 @@ menupopup {
 
 menupopup,
 panel {
-  --panel-background-color: rgb(10 11 16 / 0.85) !important;
+  --panel-background-color: rgb(0 0 0 / 0.85) !important;
 }
 
 .menupopup-arrowscrollbox {
-  background-color: rgb(13 14 19 / 0.96) !important;
+  background-color: rgb(2 2 3 / 0.96) !important;
   border: 1px solid var(--glass-border) !important;
 }
 
@@ -176,8 +173,8 @@ panel {
 
 .urlbar,
 #searchbar {
-  --urlbar-background-color: rgb(22 23 33 / 0.55) !important;
-  --urlbar-background-color-focus: rgb(22 23 33 / 0.68) !important;
+  --urlbar-background-color: rgb(5 5 8 / 0.5) !important;
+  --urlbar-background-color-focus: rgb(5 5 8 / 0.62) !important;
 }
 
 .urlbar-background {
@@ -194,7 +191,7 @@ panel {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgb(14 14 20 / 0.28);
+  background: rgb(0 0 0 / 0.28);
   backdrop-filter: blur(var(--page-frost)) saturate(1.25) brightness(0.86) !important;
   pointer-events: none;
 }
