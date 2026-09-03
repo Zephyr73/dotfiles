@@ -46,7 +46,7 @@
 }
 
 :root {
-  color-scheme: light dark;
+  color-scheme: dark;
 
   /* glass knobs — single tuning block */
   --glass-blur: 24px;

@@ -42,26 +42,39 @@ Apply on this machine after pulling changes:
 
 AUR packages (`vesktop-bin`, `visual-studio-code-bin`) are detected and routed through `omarchy pkg aur add` automatically.
 
-## Firefox theming (auto-sync)
+## Firefox (static theme)
 
-The hand-built "square + frosted-glass" Firefox theme lives as static templates in
-`omarchy/firefox/`:
+Firefox uses a **static** square + frosted-glass theme that is deliberately
+**not** synced to Omarchy themes — switching the Omarchy theme does not recolor
+or restart Firefox. The frozen templates live in `omarchy/firefox/`:
 
-- `base.userChrome.css` — the glass UI, with the accent color exposed as
-  `--uc-accent-rgb` so it follows the active Omarchy palette
+- `base.userChrome.css` — the glass UI (square corners, frosted surfaces)
 - `base.userContent.css` — square corners on `about:*` pages
 
-On every Omarchy theme change (or when run manually), the `theme-set` hook
-(`omarchy/hooks/theme-set.d/firefox-theme-sync`) stamps the active palette accent
-into each active Firefox profile's `chrome/` directory, so switching themes
-recolors the accent while preserving the glass layout:
+To re-apply this look to the active profile after a fresh install:
 
 ```bash
-~/.config/omarchy/scripts/firefox-theme-sync   # regenerate now
+cp ~/.config/omarchy/firefox/base.userChrome.css ~/.config/mozilla/firefox/*.default-release/chrome/userChrome.css
+cp ~/.config/omarchy/firefox/base.userContent.css ~/.config/mozilla/firefox/*.default-release/chrome/userContent.css
 ```
 
 Requires Firefox's `toolkit.legacyUserProfileCustomizations.stylesheets=true`
 (user.js) plus `widget.wayland.opaque-region.enabled=false` for the glass to render.
+
+**Important — Firefox must use the System theme, not the built-in Dark theme.**
+Set this in Firefox (Settings → General → Appearance → Theme → System) or set the
+pref in the active profile:
+
+```js
+// about:config / prefs.js
+user_pref("extensions.activeThemeID", "default-theme@mozilla.org");
+```
+
+The built-in Dark theme (`firefox-compact-dark@mozilla.org`) repaints the whole
+chrome over `userChrome.css` and keeps the UI in default grey — only this
+System-theme setting lets the glass colors in `base.userChrome.css` take effect.
+The stylesheet also forces `color-scheme: dark` so text/icons stay light on the
+black glass.
 
 ## Boot / login screen (plymouth + SDDM)
 
