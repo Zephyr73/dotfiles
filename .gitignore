@@ -23,3 +23,33 @@
 # Junk / backups
 *.bak.*
 *.bak-*
+
+# ---------------------------------------------------------------------------
+# Stock-identical to Omarchy (re-seeded by a fresh install via /etc/skel).
+# Common dotfiles implicitly tracks this whole dir; these explicit rules keep
+# the repo limited to ONLY the user's genuine changes on top of Omarchy.
+# ---------------------------------------------------------------------------
+
+# Hypr — stock files (only input.lua & looknfeel.lua are genuinely custom)
+/hypr/bindings.lua
+/hypr/hyprland.lua
+/hypr/autostart.lua
+/hypr/hyprsunset.conf
+/hypr/.luarc.json
+/hypr/xdph.conf
+
+# Terminals — stock configs
+/alacritty/alacritty.toml
+/foot/foot.ini
+/kitty/kitty.conf
+/ghostty/config
+
+# Omarchy — stock-controlled files
+/omarchy/extensions/omarchy-menu.jsonc
+/omarchy/themed/alacritty.toml.tpl.sample
+/omarchy/hooks/battery-low.d/play-warning-sound.sample
+/omarchy/hooks/font-set.d/show-font-notification.sample
+/omarchy/hooks/post-boot.d/weather.sample
+/omarchy/hooks/post-update.d/show-update-notification.sample
+/omarchy/hooks/pre-refresh-pacman.d/add-custom-repo.sample
+/omarchy/hooks/theme-set.d/show-theme-notification.sample

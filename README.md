@@ -13,15 +13,34 @@ Personal config sync for [Omarchy](https://omarchy.org) (Arch + Hyprland).
 
 ## What's synced
 
-Whitelist approach via `.gitignore` — only these paths are tracked:
+This repo stores **only your changes on top of a stock Omarchy install** — not
+a copy of Omarchy itself. A fresh Omarchy install seeds `~/.config` with all its
+defaults from `/etc/skel`; this repo carries just the files you modified or
+added, so pulling it reproduces this device's setup exactly.
 
-- `hypr/` — window manager config (bindings, look & feel, input, autostart)
-- `omarchy/` — shell/bar layout (`shell.json`), themes, theme hooks, custom scripts
-- `backgrounds/`
-- Terminals: `alacritty/`, `foot/`, `kitty/`, `ghostty/`
+Tracked (genuine deviations from stock):
 
-Not synced on purpose:
+- `hypr/input.lua`, `hypr/looknfeel.lua` — the two window-manager files you
+  customized (the rest of `hypr/` is stock and left alone)
+- `omarchy/shell.json` — clock format, weather unit, custom network plugin, power %
+- `omarchy/firefox/` — square + frosted-glass static theme
+- `omarchy/packages/` — app add/remove manifest
+- `omarchy/scripts/` — `sync-apps`, `sync-plymouth`, `vesktop-theme-sync`
+- `omarchy/hooks/` — custom hooks (voxtype, agent, fingerprint, vesktop)
+- `omarchy/plugins/zephyr.network/` — custom bar network module
+- `omarchy/sddm/`, `omarchy/plymouth/` — boot/login theme backups
+- `omarchy/branding/`, `omarchy/defaults/agent`
+- `omarchy/themes/vantablack-pastel/` — custom theme (fork of stock `vantablack`)
+- `README.md`, `.gitignore`, `screenshots/`
 
+Explicitly excluded by `.gitignore` (stock-identical, re-seeded by a fresh
+install — not "your changes"):
+
+- Stock terminal configs: `alacritty/`, `foot/`, `kitty/`, `ghostty/`
+- Stock Hypr files: `bindings.lua`, `hyprland.lua`, `autostart.lua`,
+  `hyprsunset.conf`, `.luarc.json`, `xdph.conf`
+- Stock Omarchy files: `extensions/omarchy-menu.jsonc`,
+  `themed/alacritty.toml.tpl.sample`, the sample hooks under `hooks/*/`
 - `hypr/monitors.lua` — machine-specific monitor layout
 - Everything else in `~/.config` — browser profiles, app state, secrets
 - Backup files (`*.bak.*`)
@@ -92,25 +111,35 @@ Restore them (e.g. after an update reverts them, or on a fresh install):
 
 ## Restore on a fresh Omarchy install
 
-A fresh install already populates `~/.config` with defaults, so graft the repo
-onto it instead of cloning into it:
+A fresh install seeds `~/.config` with stock defaults (from `/etc/skel`) and
+this repo carries only your changes on top of those defaults. So graft the repo
+onto the existing `~/.config` rather than cloning into it:
 
 ```bash
 cd ~/.config
 git init -b omarchy
 git remote add origin https://github.com/Zephyr73/dotfiles.git
 git fetch origin
-git reset --hard origin/omarchy   # replaces whitelisted defaults, touches nothing else
+git reset --hard origin/omarchy   # overlays your tracked changes; stock files elsewhere stay as stock
 git branch -u origin/omarchy      # so future updates are just `git pull`
 ```
 
-Then regenerate the machine-specific monitor config if missing, apply apps, and reload:
+> `git reset --hard` only restores the tracked files. Because the repo tracks
+> only your deviations, all stock files keep their fresh-install defaults — that
+> is correct. Your two customized Hypr files (`input.lua`, `looknfeel.lua`) and
+> `omarchy/shell.json` are restored over their stock versions by the reset.
+
+Then regenerate the machine-specific monitor config if missing, apply apps, and
+reload:
 
 ```bash
 omarchy refresh config hypr/monitors.lua   # only needed if the file is missing
 ~/.config/omarchy/scripts/sync-apps        # install/remove apps per manifest
 omarchy restart shell                      # reload bar/shell (Hyprland auto-reloads WM config)
 ```
+
+Firefox theming and the boot/login theme need manual re-apply after a fresh
+install (see the Firefox and plymouth/SDDM sections above).
 
 ## Keeping machines in sync
 
