@@ -53,3 +53,14 @@
 /omarchy/hooks/post-update.d/show-update-notification.sample
 /omarchy/hooks/pre-refresh-pacman.d/add-custom-repo.sample
 /omarchy/hooks/theme-set.d/show-theme-notification.sample
+
+# ---------------------------------------------------------------------------
+# Vencord (vesktop) — track only hand-authored config so behavior reproduces on
+# a fresh device. Exclude runtime caches/state and the regenerable theme.
+# ---------------------------------------------------------------------------
+!/vesktop/
+/vesktop/*
+!/vesktop/settings/
+/vesktop/settings/*
+!/vesktop/settings/settings.json
+!/vesktop/settings/quickCss.css

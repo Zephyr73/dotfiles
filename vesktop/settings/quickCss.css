@@ -1,0 +1,14 @@
+/* Hide Shop Tab */
+[data-list-item-id*="shop"] {
+    display: none !important;
+}
+
+/* Hide Nitro Tab (Optional) */
+[data-list-item-id*="nitro"] {
+    display: none !important;
+}
+
+/* Hide Quests Tab (Optional) */
+[data-list-item-id*="quest"] {
+    display: none !important;
+}
