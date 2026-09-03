@@ -10,6 +10,7 @@ BASE_DIR="$HOME/.config/omarchy/firefox"
 BASE_CHROME="$BASE_DIR/base.userChrome.css"
 BASE_CONTENT="$BASE_DIR/base.userContent.css"
 FF_DIR="$HOME/.config/mozilla/firefox"
+STATE_FILE="$HOME/.local/state/omarchy/firefox-accent"
 
 # Bail out silently if the pieces aren't present (e.g. on a fresh install
 # before Firefox or the repo checkout exist).
@@ -39,3 +40,28 @@ for profile in "$FF_DIR"/*/; do
   emit_chrome >"$chrome_dir/userChrome.css"
   cp "$BASE_CONTENT" "$chrome_dir/userContent.css"
 done
+
+# Reload Firefox so the new accent shows. Restart only when the accent actually
+# changed (avoids killing Firefox on every theme-set, e.g. re-selecting the
+# current theme), and only if Firefox is running.
+if [[ -n "$ACC_RGB" ]]; then
+  PREV_ACC=""
+  [[ -f "$STATE_FILE" ]] && PREV_ACC=$(cat "$STATE_FILE")
+
+  if [[ "$PREV_ACC" != "$ACC_RGB" ]]; then
+    mkdir -p "$(dirname "$STATE_FILE")"
+    printf '%s\n' "$ACC_RGB" >"$STATE_FILE"
+
+    if pgrep -x firefox >/dev/null; then
+      # Graceful quit (SIGINT) so Firefox writes its session store — with
+      # browser.sessionstore.resume_from_crash=false a plain kill would lose
+      # open tabs. The clean quit + browser.startup.page=3 restores them.
+      pkill -INT -x firefox
+      for _ in $(seq 1 20); do
+        pgrep -x firefox >/dev/null || break
+        sleep 0.5
+      done
+      setsid uwsm-app -- firefox >/dev/null 2>&1 &
+    fi
+  fi
+fi
