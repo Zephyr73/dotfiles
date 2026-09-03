@@ -1,9 +1,0 @@
-#!/bin/bash
-
-# omarchy:summary=Regenerate each Firefox profile's glass theme with the active Omarchy accent
-# omarchy:args=[theme-slug]
-# omarchy:hidden=true
-
-# Delegate to the theme-set hook (single source of truth, shared with the
-# `theme-set` automation hook that fires on every Omarchy theme change).
-exec bash "$HOME/.config/omarchy/hooks/theme-set.d/firefox-theme-sync" "$@"
